@@ -1,0 +1,8 @@
+clip @ git+https://github.com/openai/CLIP.git@a9b1bf5920416aaeaec965c25dd9e8f98c864f16
+numpy==1.24.3
+Pillow==9.5.0
+platformdirs==3.5.0
+requests==2.30.0
+torch==2.0.0
+torchvision==0.15.1
+tqdm==4.65.0
