@@ -24,7 +24,7 @@ model_to_host = {
     "sac+logos+ava1-l14-linearMSE": "https://github.com/christophschuhmann/improved-aesthetic-predictor/blob/main/sac+logos+ava1-l14-linearMSE.pth?raw=true",
 }
 
-MODEL = "chadscorer"
+MODEL = "sac+logos+ava1-l14-linearMSE"
 
 
 def ensure_model(model):
@@ -44,7 +44,6 @@ def ensure_model(model):
 
         print(f"downloading {url}")
         r = requests.get(url)
-        print(r)
         with open(full_file, "wb") as f:
             f.write(r.content)
             print(f"saved to {full_file}")
