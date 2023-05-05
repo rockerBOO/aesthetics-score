@@ -143,7 +143,6 @@ def main(args):
 
     sorted_scores = sorted(scores, key=lambda x: x["score"], reverse=True)
 
-    print(args)
     if args.save_csv:
         fieldnames = ["file", "score"]
         id = str(round(time.time()))
