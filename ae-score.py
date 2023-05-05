@@ -129,17 +129,26 @@ def main(args):
     input_images = Path(args.image_file_or_dir)
     if input_images.is_dir():
         for file in os.listdir(input_images):
-            image = Image.open(os.path.join(input_images, file))
-            scores.append({"file": file, "score": get_score(predictor, image, device)})
+            full_file = os.path.join(input_images, file)
+            if full_file.lower().endswith(
+                (".jpg", ".jpeg", ".png", ".bmp", ".webp", ".avif")
+            ):
+                image = Image.open(full_file)
+                scores.append(
+                    {"file": file, "score": get_score(predictor, image, device)}
+                )
     else:
-        image = Image.open(args.image_file_or_dir)
-        chad_score = get_score(predictor, image, device)
-        scores.append(
-            {
-                "file": args.image_file_or_dir,
-                "score": get_score(predictor, image, device),
-            }
-        )
+        if args.image_file_or_dir.lower().endswith(
+            (".jpg", ".jpeg", ".png", ".bmp", ".webp", ".avif")
+        ):
+            image = Image.open(args.image_file_or_dir)
+            chad_score = get_score(predictor, image, device)
+            scores.append(
+                {
+                    "file": args.image_file_or_dir,
+                    "score": get_score(predictor, image, device),
+                }
+            )
 
     sorted_scores = sorted(scores, key=lambda x: x["score"], reverse=True)
 
