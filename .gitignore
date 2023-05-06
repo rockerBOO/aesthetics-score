@@ -1,2 +1,6 @@
 .venv
 .env
+
+*.json
+
+__pycache__

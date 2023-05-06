@@ -27,7 +27,7 @@ model_to_host = {
 MODEL = "sac+logos+ava1-l14-linearMSE"
 
 
-def ensure_model(model):
+def ensure_model(model=MODEL):
     """
     Make sure we have the model to score with.
     Saves into your cache directory on your system
@@ -36,10 +36,10 @@ def ensure_model(model):
 
     Path(cache_dir).mkdir(exist_ok=True)
 
-    file = MODEL + ".pth"
+    file = model + ".pth"
     full_file = os.path.join(cache_dir, file)
     if not Path(full_file).exists():
-        url = model_to_host[MODEL]
+        url = model_to_host[model]
         import requests
 
         print(f"downloading {url}")
@@ -102,7 +102,11 @@ class AestheticPredictor(nn.Module):
 
 
 def main(args):
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    if args.device is None:
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+    else:
+        device = args.device
+
     # load the model you trained previously or the model available in this repo
 
     predictor = load_model(MODEL, device)
@@ -185,6 +189,13 @@ if __name__ == "__main__":
         default=False,
         action="store_false",
         help="Save the results to a csv file in the current directory",
+    )
+
+    parser.add_argument(
+        "--device",
+        default=None,
+        type=str,
+        help="Device to do inference on. Options: 'cpu', 'cuda'",
     )
 
     args = parser.parse_args()
