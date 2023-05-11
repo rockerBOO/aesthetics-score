@@ -25,7 +25,7 @@ cd aesthetic-score
 ```
 
 ```bash
-pip -m venv venv
+python -m venv venv
 # In cmd.exe
 # venv\Scripts\activate.bat
 # In PowerShell
