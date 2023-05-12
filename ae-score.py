@@ -25,6 +25,7 @@ model_to_host = {
 }
 
 MODEL = "sac+logos+ava1-l14-linearMSE"
+MODEL = "chadscorer"
 
 
 def ensure_model(model=MODEL):
@@ -34,7 +35,7 @@ def ensure_model(model=MODEL):
     """
     cache_dir = user_cache_dir(APP_NAME, APP_AUTHOR)
 
-    Path(cache_dir).mkdir(exist_ok=True)
+    Path(cache_dir).mkdir(parents=True, exist_ok=True)
 
     file = model + ".pth"
     full_file = os.path.join(cache_dir, file)
