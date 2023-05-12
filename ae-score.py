@@ -25,7 +25,6 @@ model_to_host = {
 }
 
 MODEL = "sac+logos+ava1-l14-linearMSE"
-MODEL = "chadscorer"
 
 
 def ensure_model(model=MODEL):
