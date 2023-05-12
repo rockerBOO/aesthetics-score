@@ -187,7 +187,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--save_csv",
         default=False,
-        action="store_false",
+        action="store_true",
         help="Save the results to a csv file in the current directory",
     )
 
