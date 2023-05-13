@@ -43,7 +43,7 @@ class AEHTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
 
             dir_path = PurePath(
-                "/mnt/900/builds/stable-diffusion-webui/outputs/txt2img-images/2023-05-12/692e612d10-models_roserenderedmix_v10",
+                self.server.state['dir'],
             )
             with open(
                 os.path.join(dir_path, self.path[5:]),
@@ -135,6 +135,7 @@ if __name__ == "__main__":
     parser.add_argument("scores_file", help="Scores CSV file to filter your results")
     parser.add_argument(
         "--image_dir",
+        required=True,
         help="Directory where the images are located for this CSV file for loading the images into the website",
     )
     parser.add_argument(
