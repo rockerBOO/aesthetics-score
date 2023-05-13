@@ -43,7 +43,46 @@ class AEHTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
 
             dir_path = PurePath(
-                self.server.state['dir'],
+                self.server.state["dir"],
+            )
+            with open(
+                os.path.join(dir_path, self.path[5:]),
+                "rb",
+            ) as f:
+                self.wfile.write(f.read())
+        elif path.path.endswith(".jpg"):
+            self.send_response(200)
+            self.send_header("Content-type", "image/jpeg")
+            self.end_headers()
+
+            dir_path = PurePath(
+                self.server.state["dir"],
+            )
+            with open(
+                os.path.join(dir_path, self.path[5:]),
+                "rb",
+            ) as f:
+                self.wfile.write(f.read())
+        elif path.path.endswith(".webp"):
+            self.send_response(200)
+            self.send_header("Content-type", "image/webp")
+            self.end_headers()
+
+            dir_path = PurePath(
+                self.server.state["dir"],
+            )
+            with open(
+                os.path.join(dir_path, self.path[5:]),
+                "rb",
+            ) as f:
+                self.wfile.write(f.read())
+        elif path.path.endswith(".jpeg"):
+            self.send_response(200)
+            self.send_header("Content-type", "image/jpeg")
+            self.end_headers()
+
+            dir_path = PurePath(
+                self.server.state["dir"],
             )
             with open(
                 os.path.join(dir_path, self.path[5:]),
