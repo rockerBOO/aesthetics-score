@@ -1,0 +1,40 @@
+body {
+  background: black;
+  color: #b7c4be;
+  font-family: sans-serif;
+}
+
+#main {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20vw, 1fr));
+  grid-gap: 2vw;
+  margin: 10vh 6vw;
+}
+
+.block {
+  display: grid;
+  align-content: center;
+  justify-content: center;
+  text-align: center;
+  grid-gap: 1vmax;
+}
+
+.block .file {
+  opacity: 0.5;
+}
+.block .file:hover {
+  opacity: 1;
+}
+
+.block .score {
+  font-size: 1.2em;
+}
+
+.block img {
+  max-width: 18vw;
+  max-height: 75vh;
+}
+
+.dg {
+  font-size: 1rem;
+}

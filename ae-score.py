@@ -1,5 +1,3 @@
-import os.path
-
 from pathlib import Path
 import torch
 import torch.nn as nn
@@ -89,10 +87,13 @@ class AestheticPredictor(nn.Module):
         self.layers = nn.Sequential(
             nn.Linear(self.input_size, 1024),
             nn.Dropout(0.2),
+            #nn.ReLU()
             nn.Linear(1024, 128),
             nn.Dropout(0.2),
+            #nn.ReLU()
             nn.Linear(128, 64),
             nn.Dropout(0.1),
+            #nn.ReLU()
             nn.Linear(64, 16),
             nn.Linear(16, 1),
         )
@@ -109,7 +110,10 @@ def main(args):
 
     # load the model you trained previously or the model available in this repo
 
+    print(f"Loading {MODEL}")
     predictor = load_model(MODEL, device)
+
+    print("Loading CLIP ViT-L/14")
     clip_model, clip_preprocess = load_clip_model(device=device)
 
     def get_image_features(
@@ -132,7 +136,11 @@ def main(args):
 
     input_images = Path(args.image_file_or_dir)
     if input_images.is_dir():
-        for file in os.listdir(input_images):
+        import tqdm
+        list_dir = os.listdir(input_images)
+        t = tqdm.tqdm(total=len(list_dir))
+        
+        for file in list_dir:
             full_file = os.path.join(input_images, file)
             if full_file.lower().endswith(
                 (".jpg", ".jpeg", ".png", ".bmp", ".webp", ".avif")
@@ -141,6 +149,7 @@ def main(args):
                 scores.append(
                     {"file": file, "score": get_score(predictor, image, device)}
                 )
+            t.update()
     else:
         if args.image_file_or_dir.lower().endswith(
             (".jpg", ".jpeg", ".png", ".bmp", ".webp", ".avif")
@@ -154,7 +163,6 @@ def main(args):
                 }
             )
 
-    sorted_scores = sorted(scores, key=lambda x: x["score"], reverse=True)
 
     if args.save_csv:
         fieldnames = ["file", "score"]
@@ -162,9 +170,10 @@ def main(args):
         with open(f"scores-{id}.csv", "w", newline="") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
-            for score in sorted_scores:
+            for score in scores:
                 writer.writerow(score)
 
+    sorted_scores = sorted(scores, key=lambda x: x["score"], reverse=True)
     for score in sorted_scores:
         print(score["file"], score["score"])
 

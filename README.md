@@ -108,7 +108,17 @@ $ python ae-score.py 42.png --save_csv
 average score: 5.879870414733887
 ```
 
-then check for `scores_{timestamp}.csv`
+then check for `scores-{timestamp}.csv`
+
+## `ae-filter.py`
+
+Show images that are scored with their score and image to view in the browser. Filter by score range.
+
+```
+python ae-filter.py scores-42.csv --server --port 3456 --images_dir /home/rockerboo/images/
+```
+
+## Help
 
 See the help for all the options.
 
@@ -116,7 +126,17 @@ See the help for all the options.
 python ae-score.py --help
 ```
 
+```
+python ae-filter.py --help
+```
+
+## Changelog
+
+- 2023-05-12 - Add ae-filter.py. Use with `--server` to launch a webserver for your CSV scores file.
+
+
 ## Development
+
 
 ## Future
 
