@@ -114,6 +114,8 @@ then check for `scores-{timestamp}.csv`
 
 Show images that are scored with their score and image to view in the browser. Filter by score range.
 
+![Screenshot 2023-05-12 at 20-30-51 Aesthetics Score Filtering](https://github.com/rockerBOO/aesthetics-score/assets/15027/357bf922-c7f6-418a-9bf4-40ed8cc09a15)
+
 ```
 python ae-filter.py scores-42.csv --server --port 3456 --images_dir /home/rockerboo/images/
 ```
