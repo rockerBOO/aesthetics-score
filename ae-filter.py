@@ -158,7 +158,7 @@ def server(args, results):
         f"Server running on http://{httpd.server_address[0]}:{httpd.server_address[1]}"
     )
 
-    httpd.state = {"results": results, "dir": args.image_dir}
+    httpd.state = {"results": results, "dir": args.images_dir}
     httpd.serve_forever()
 
 
@@ -173,7 +173,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("scores_file", help="Scores CSV file to filter your results")
     parser.add_argument(
-        "--image_dir",
+        "--images_dir",
         required=True,
         help="Directory where the images are located for this CSV file for loading the images into the website",
     )
