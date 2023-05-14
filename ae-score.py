@@ -37,7 +37,13 @@ def ensure_model(model=MODEL):
     file = model + ".pth"
     full_file = os.path.join(cache_dir, file)
     if not Path(full_file).exists():
+        if model not in model_to_host:
+            raise ValueError(
+                f"invalid model: {model}. try one of these: {', '.join(model_to_host.keys())}"
+            )
+
         url = model_to_host[model]
+
         import requests
 
         print(f"downloading {url}")
@@ -87,13 +93,13 @@ class AestheticPredictor(nn.Module):
         self.layers = nn.Sequential(
             nn.Linear(self.input_size, 1024),
             nn.Dropout(0.2),
-            #nn.ReLU()
+            # nn.ReLU()
             nn.Linear(1024, 128),
             nn.Dropout(0.2),
-            #nn.ReLU()
+            # nn.ReLU()
             nn.Linear(128, 64),
             nn.Dropout(0.1),
-            #nn.ReLU()
+            # nn.ReLU()
             nn.Linear(64, 16),
             nn.Linear(16, 1),
         )
@@ -110,8 +116,8 @@ def main(args):
 
     # load the model you trained previously or the model available in this repo
 
-    print(f"Loading {MODEL}")
-    predictor = load_model(MODEL, device)
+    print(f"Loading {args.model}")
+    predictor = load_model(args.model, device)
 
     print("Loading CLIP ViT-L/14")
     clip_model, clip_preprocess = load_clip_model(device=device)
@@ -137,9 +143,10 @@ def main(args):
     input_images = Path(args.image_file_or_dir)
     if input_images.is_dir():
         import tqdm
+
         list_dir = os.listdir(input_images)
         t = tqdm.tqdm(total=len(list_dir))
-        
+
         for file in list_dir:
             full_file = os.path.join(input_images, file)
             if full_file.lower().endswith(
@@ -162,7 +169,6 @@ def main(args):
                     "score": get_score(predictor, image, device),
                 }
             )
-
 
     if args.save_csv:
         fieldnames = ["file", "score"]
@@ -198,6 +204,12 @@ if __name__ == "__main__":
         default=False,
         action="store_true",
         help="Save the results to a csv file in the current directory",
+    )
+
+    parser.add_argument(
+        "--model",
+        default=MODEL,
+        help=f"Model to use: {', '.join(model_to_host.keys())}. Defaults to {MODEL}",
     )
 
     parser.add_argument(
