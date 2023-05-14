@@ -173,11 +173,14 @@ def main(args):
     if args.save_csv:
         fieldnames = ["file", "score"]
         id = str(round(time.time()))
-        with open(f"scores-{id}.csv", "w", newline="") as csvfile:
+        csv_file = f"scores-{id}.csv"
+        with open(csv_file, "w", newline="") as csvfile:
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for score in scores:
                 writer.writerow(score)
+
+            print(f"Saved CSV to {csv_file}")
 
     sorted_scores = sorted(scores, key=lambda x: x["score"], reverse=True)
     for score in sorted_scores:
