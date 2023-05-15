@@ -120,6 +120,8 @@ Show images that are scored with their score and image to view in the browser. F
 python ae-filter.py scores-42.csv --server --port 3456 --images_dir /home/rockerboo/images/
 ```
 
+Note: ae-filter runs a web server that is not designed for production use. Possibly vulnerable, runs only on localhost and not exposed for security. 
+
 ## Help
 
 See the help for all the options.
