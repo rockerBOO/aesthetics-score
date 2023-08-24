@@ -277,7 +277,7 @@ def main(args: Args):
 
     if len(sorted_scores) < 300:
         for score in sorted_scores:
-            print(score["file"], score["score"])
+            print(score["file"], score["score"].item())
 
     acc_scores = 0
     for score in sorted_scores:
@@ -289,7 +289,7 @@ def main(args: Args):
                 scores, full_path=args.image_file_or_dir if args.store_full_path else ""
             )
 
-        print(f"average score: {acc_scores / len(sorted_scores)}")
+        print(f"average score: {acc_scores.item() / len(sorted_scores)}")
     else:
         print(f"no scores. Did you put the correct directory/image in?")
 

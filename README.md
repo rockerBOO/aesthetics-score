@@ -1,21 +1,25 @@
 # Aesthetic Score
 
 <!--toc:start-->
+
 - [Aesthetic Score](#aesthetic-score)
   - [Install](#install)
   - [Usage](#usage)
     - [File](#file)
     - [Directory](#directory)
     - [CSV](#csv)
+  - [`ae-filter.py`](#ae-filterpy)
+  - [Help](#help)
+  - [Changelog](#changelog)
   - [Development](#development)
   - [Future](#future)
   - [Contributions](#contributions)
   - [Thanks](#thanks)
-<!--toc:end-->
+  <!--toc:end-->
 
-Find the aesthetic score of your images. 
+Find the aesthetic score of your images.
 
-> A linear estimator on top of clip to predict the aesthetic quality of pictures 
+> A linear estimator on top of clip to predict the aesthetic quality of pictures
 
 ## Install
 
@@ -98,7 +102,7 @@ $ python ae-score.py outputs/
 average score: 5.227843523025513
 ```
 
-### CSV 
+### CSV
 
 Save the scores to a CSV file:
 
@@ -112,7 +116,7 @@ then check for `scores-{timestamp}.csv`
 
 ## `ae-filter.py`
 
-Show images that are scored with their score and image to view in the browser. Filter by score range.
+A visualization tool to view images that are scored with their score and image to view in the browser. Filter by score range.
 
 ![Screenshot 2023-05-12 at 20-30-51 Aesthetics Score Filtering](https://github.com/rockerBOO/aesthetics-score/assets/15027/357bf922-c7f6-418a-9bf4-40ed8cc09a15)
 
@@ -120,7 +124,7 @@ Show images that are scored with their score and image to view in the browser. F
 python ae-filter.py scores-42.csv --server --port 3456 --images_dir /home/rockerboo/images/
 ```
 
-Note: ae-filter runs a web server that is not designed for production use. Possibly vulnerable, runs only on localhost and not exposed for security. 
+Note: ae-filter runs a web server that is not designed for production use. Possibly vulnerable, runs only on localhost and not exposed for security.
 
 ## Help
 
@@ -134,13 +138,42 @@ python ae-score.py --help
 python ae-filter.py --help
 ```
 
+## `filter.py`
+
+Filter your images based on aesthetics scores. Will copy images over to the output directory if they are a high enough score.
+
+Requires a score `.csv` file with full file paths.
+
+### Help
+
+```bash
+$ python filter.py --help
+usage: filter.py [-h] [--score SCORE] [--output OUTPUT] input
+
+positional arguments:
+  input            Input CSV of format file, score with full file path
+
+options:
+  -h, --help       show this help message and exit
+  --score SCORE    Score to filter by
+  --output OUTPUT  Where do we place the selected files?
+```
+
+### Example
+
+```bash
+$ python filter.py --score 6.5 --output output scores-1692807289.csv
+$
+```
+
+Currently, this tool does not output anything to the terminal.
+
 ## Changelog
 
-- 2023-05-12 - Add ae-filter.py. Use with `--server` to launch a webserver for your CSV scores file.
-
+- 2023-08-24 — Add `filter.py`. Filter images based on aesthetic scores in a scores `.csv`.
+- 2023-05-12 — Add ae-filter.py. Use with `--server` to launch a webserver for your CSV scores file.
 
 ## Development
-
 
 ## Future
 
