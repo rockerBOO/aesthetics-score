@@ -17,6 +17,8 @@ import torch.nn as nn
 import torchvision.transforms
 from PIL import Image
 from platformdirs import user_cache_dir
+from typing import List
+
 
 APP_NAME = "ae-score"
 APP_AUTHOR = "rockerBOO"
@@ -99,7 +101,7 @@ ModelName = typing.NewType("ModelName", str)
 
 
 def load_model(
-    model: ModelName, clip_model, device="cpu", dtype=torch.float16
+    model: ModelName, clip_model, device=torch.device("cpu"), dtype=torch.float16
 ) -> AestheticPredictor:
     ensure_model(model)
     cache_dir = user_cache_dir(APP_NAME, APP_AUTHOR)
@@ -134,8 +136,8 @@ def normalized(a, axis=-1, order=2):
 
 def get_image_features(
     image: torch.Tensor,
-    clip_model: typing.Union[clip.model.CLIP],
-    device,
+    clip_model: clip.model.CLIP,
+    device: torch.device,
 ):
     return normalized(clip_model.encode_image(image).cpu().detach().numpy())
 
@@ -149,36 +151,17 @@ def prepare_dtype(args: argparse.Namespace):
         weight_dtype = torch.bfloat16
 
     save_dtype = None
-    # if args.save_precision == "fp16":
-    #     save_dtype = torch.float16
-    # elif args.save_precision == "bf16":
-    #     save_dtype = torch.bfloat16
-    # elif args.save_precision == "float":
-    #     save_dtype = torch.float32
 
     return weight_dtype, save_dtype
 
 
 def get_aesthetic_predictor_scores(
-    images,
+    images: List[torch.Tensor],
     predictor: AestheticPredictor,
     clip_model,
-    clip_image_processor,
     device: torch.device,
-    dtype: torch.dtype = torch.float16,
+    dtype=torch.float16,
 ):
-    """
-    predictor: AestheticPredictor
-    image: union[[Image.Image], Image.Image]
-    model: CLIPModel
-    image_processor: CLIPImageProcessor
-    device: torch.device
-    dtype: torch.dtype = "fp16"
-    """
-    # image_features_list: list[torch.Tensor] = [
-    #     get_image_features(image.unsqueeze(0).to(device), clip_model, device)
-    #     for image in images
-    # ]
     image_features_list = get_image_features(
         torch.cat([image.unsqueeze(0).to(device) for image in images]),
         clip_model,
@@ -186,10 +169,6 @@ def get_aesthetic_predictor_scores(
     )
 
     with torch.no_grad():
-        # scores = [
-        #     predictor(torch.from_numpy(image_features).to(device, dtype=dtype)).item()
-        #     for image_features in image_features_list
-        # ]
         scores = predictor(
             torch.from_numpy(image_features_list).to(device, dtype=dtype)
         )
@@ -201,7 +180,7 @@ def get_aesthetic_predictor_scores(
 
 
 def load_clip_model(
-    model: str, device="cpu"
+    model: str, device=torch.device("cpu")
 ) -> tuple[clip.model.CLIP, torchvision.transforms.Compose]:
     clip_model, clip_image_processor = clip.load(model, device=device)
 
@@ -214,16 +193,19 @@ class Args:
     model: str
     clip_model: str
     device: str
+    batch_size: int
+    no_progress: bool
+    store_full_path: bool
 
 
 Device = typing.NewType("Device", str)
 
 
-def get_device(args: Args) -> Device:
+def get_device(args: Args) -> torch.device:
     if args.device == str():
-        return args.device
+        return torch.device(args.device)
 
-    return "cuda" if torch.cuda.is_available() else "cpu"
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def main(args: Args):
@@ -232,13 +214,15 @@ def main(args: Args):
     # load the model you trained previously or the model available in this repo
 
     print(f"Loading {args.model}")
-    predictor = load_model(args.model, args.clip_model, device=device, dtype="fp16")
+    predictor = load_model(
+        args.model, args.clip_model, device=device, dtype=torch.float16
+    )
 
     print(f"Loading CLIP {args.clip_model}")
     clip_model, clip_image_processor = load_clip_model(args.clip_model, device=device)
 
     scores = []
-    wdtype, sdtype = prepare_dtype(args)
+    wdtype, _sdtype = prepare_dtype(args)
 
     files = get_files(args.image_file_or_dir)
 
@@ -261,6 +245,7 @@ def main(args: Args):
         ae_scores = get_aesthetic_predictor_scores(
             images, predictor, clip_model, clip_image_processor, device, wdtype
         )
+
         for score in ae_scores:
             scores.append({"file": file, "score": score})
 
@@ -291,7 +276,7 @@ def main(args: Args):
 
         print(f"average score: {acc_scores.item() / len(sorted_scores)}")
     else:
-        print(f"no scores. Did you put the correct directory/image in?")
+        print("no scores. Did you put the correct directory/image in?")
 
 
 def get_files(file_or_dir):
@@ -434,7 +419,7 @@ class AEHTTPHandler(http.server.SimpleHTTPRequestHandler):
                         "file": file,
                         "score": get_aesthetic_predictor_scores(
                             self.server.state["model"],
-                            [Image.open(file)],
+                            self.server.state['clip_image_processor'](Image.open(file)),
                             self.server.state["clip_model"],
                             self.server.state["clip_image_processor"],
                             self.server.state["device"],
@@ -461,6 +446,14 @@ class AEHTTPHandler(http.server.SimpleHTTPRequestHandler):
 
 
 class AEHTTPServer(http.server.ThreadingHTTPServer):
+    state = {
+        "args": any,
+        "model": AestheticPredictor,
+        "clip_model": ClipModel,
+        "clip_image_processor": ClipImageProcessor,
+        "device": torch.device,
+    }
+
     def __init__(
         self, state, server_address, request_handler_class, bind_and_activate=True
     ):
