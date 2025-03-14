@@ -1,21 +1,19 @@
-[tool.poetry]
+[project]
 name = "aesthetics-score"
 version = "0.1.0"
-description = ""
-authors = ["rockerBOO <rockerboo@gmail.com>"]
-license = "MIT"
+description = "Add your description here"
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = ">=3.9"
-numpy = "^1.25.2"
-pillow = "^10.0.0"
-platformdirs = "^3.10.0"
-requests = "^2.31.0"
-tqdm = "^4.66.1"
-clip = {git = "https://github.com/openai/CLIP.git", rev = "a9b1bf5920416aaeaec965c25dd9e8f98c864f16"}
-
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires-python = ">=3.13"
+dependencies = [
+    "accelerate>=1.5.1",
+    "diffusers>=0.32.2",
+    "duckdb>=1.2.1",
+    "pandas>=2.2.3",
+    "pillow>=11.1.0",
+    "polars>=1.24.0",
+    "pyarrow>=19.0.1",
+    "schedulefree>=1.4",
+    "torch>=2.6.0",
+    "torchvision>=0.21.0",
+    "transformers>=4.49.0",
+]
